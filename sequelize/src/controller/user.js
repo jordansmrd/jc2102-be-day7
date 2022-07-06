@@ -17,11 +17,11 @@ const userController = {
         throw new Error("username/email/password not found");
       }
 
-      const checkPass = bcrypt.compareSync(password, user.password);
+      // const checkPass = bcrypt.compareSync(password, user.password);
 
-      if (!checkPass) {
-        throw new Error("username/email/password not found");
-      }
+      // if (!checkPass) {
+      //   throw new Error("username/email/password not found");
+      // }
 
       delete user.dataValues.password;
 
@@ -39,6 +39,16 @@ const userController = {
   register: async (req, res) => {
     try {
       const { username, password, full_name, email } = req.body;
+
+      const findUser = await User.findOne({
+        where: {
+          [Op.or]: [{ username }, { email }],
+        },
+      });
+
+      if (findUser) {
+        throw Error("username/email has been taken");
+      }
 
       const hashedPassword = bcrypt.hashSync(password, 5);
 

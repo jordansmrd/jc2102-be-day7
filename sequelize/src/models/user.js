@@ -17,6 +17,9 @@ const User = (sequelize) => {
     email: {
       type: DataTypes.STRING,
       allowNull: false,
+      validate: {
+        isEmail: true,
+      },
     },
     is_verified: {
       type: DataTypes.BOOLEAN,

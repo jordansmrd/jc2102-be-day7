@@ -1,6 +1,4 @@
-const { Post } = require("../lib/sequelize");
-
-const { Op } = require("sequelize");
+const { Post, User } = require("../lib/sequelize");
 
 const postController = {
   getAllPost: async (req, res) => {
@@ -25,6 +23,54 @@ const postController = {
       console.log(err);
       return res.status(500).json({
         message: "error",
+      });
+    }
+  },
+  getPostPaging: async (req, res) => {
+    try {
+      const { limit = 2, page = 1 } = req.query;
+
+      const findPost = await Post.findAll({
+        offset: (page - 1) * limit,
+        limit: limit ? parseInt(limit) : undefined,
+      });
+
+      return res.status(200).json({
+        message: "fetching data",
+        result: findPost,
+      });
+    } catch (err) {
+      console.log(err);
+
+      res.status(400).json({
+        message: "error ",
+      });
+    }
+  },
+  getPostByUser: async (req, res) => {
+    try {
+      const { id } = req.params;
+
+      const findPost = await Post.findAll({
+        include: [
+          {
+            model: User,
+          },
+        ],
+        where: {
+          user_id: id,
+        },
+      });
+
+      return res.status(200).json({
+        message: "fetching data",
+        result: findPost,
+      });
+    } catch (err) {
+      console.log(err);
+
+      res.status(400).json({
+        message: "error ",
       });
     }
   },
