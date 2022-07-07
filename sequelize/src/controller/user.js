@@ -52,7 +52,7 @@ const userController = {
 
       const hashedPassword = bcrypt.hashSync(password, 5);
 
-      const registerUser = await User.create({
+      await User.create({
         username,
         password: hashedPassword,
         full_name,

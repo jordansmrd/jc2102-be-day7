@@ -25,5 +25,14 @@ const todoSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+todoSchema.methods.toJSON = function () {
+  let todo = this.toObject();
+
+  delete todo.createdAt;
+  delete todo.updatedAt;
+
+  return todo;
+};
+
 const Todo = mongoose.model("Todo", todoSchema);
 module.exports = Todo;

@@ -64,5 +64,31 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+userSchema.methods.toJSON = function () {
+  let user = this.toObject();
+
+  delete user.password;
+  delete user.__v;
+  delete user.createdAt;
+  delete user.updatedAt;
+  delete user.todos;
+
+  return user;
+};
+
+userSchema.pre("save", async function (next) {
+  let user = this;
+
+  try {
+    if (user.isModified("password")) {
+      user.password = await bcrypt.hash(user.password, 5);
+    }
+  } catch (err) {
+    console.log(err);
+    throw new Error("Problem with Hash Password");
+  }
+  next();
+});
+
 const User = mongoose.model("User", userSchema);
 module.exports = User;

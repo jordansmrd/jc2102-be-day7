@@ -6,7 +6,12 @@ dotenv.config();
 
 const PORT = process.env.PORT;
 const { sequelize } = require("./lib/sequelize");
-const { postRoutes, userRoutes, userMongoRoutes } = require("./routes");
+const {
+  postRoutes,
+  userRoutes,
+  userMongoRoutes,
+  todoMongoRoutes,
+} = require("./routes");
 // sequelize.sync({ alter: true });
 
 const mongoose = require("mongoose");
@@ -23,6 +28,7 @@ app.use(express.json());
 app.use("/post", postRoutes);
 app.use("/user", userRoutes);
 app.use("/usermongo", userMongoRoutes);
+app.use("/todo", todoMongoRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running");

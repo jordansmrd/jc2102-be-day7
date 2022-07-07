@@ -3,10 +3,11 @@ const router = express.Router();
 
 const { todoMongoController } = require("../controller_mongo");
 
-// router.get("/", userController.login);
+router.get("/:username", todoMongoController.getTodos);
 
-router.post("/", todoMongoController.addTodo);
+router.post("/:username", todoMongoController.addTodo);
 
-// router.patch("/:id", userController.editUser);
+router.patch("/:username", todoMongoController.editAllStatus);
+router.delete("/:id", todoMongoController.deleteTodos);
 
 module.exports = router;

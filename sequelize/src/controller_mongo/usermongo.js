@@ -2,8 +2,21 @@ const bcrypt = require("bcrypt");
 const User = require("../model_mongo/userModel");
 const userMongoController = {
   login: async (req, res) => {
+    const { username, password } = req.body;
+
     try {
-      res.status(200).json({
+      const user = await User.findOne({ username });
+      if (!user) {
+        throw new Error("User Not Found");
+      }
+
+      let checkPass = bcrypt.compareSync(password, user.password);
+
+      if (!checkPass) {
+        throw new Error("Wrong Password");
+      }
+
+      return res.status(200).json({
         message: "login succeed",
         result: user,
       });
@@ -16,7 +29,6 @@ const userMongoController = {
   },
   register: async (req, res) => {
     const user = new User(req.body);
-    console.log(req.body);
 
     try {
       let result = await user.save();
