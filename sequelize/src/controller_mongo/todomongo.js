@@ -37,7 +37,7 @@ const todoMongoController = {
       await user.save();
 
       return res.status(200).json({
-        message: "new user has been created",
+        message: "new list has been created",
         result: result,
       });
     } catch (err) {

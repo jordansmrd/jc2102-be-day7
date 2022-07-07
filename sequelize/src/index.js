@@ -11,6 +11,7 @@ const {
   userRoutes,
   userMongoRoutes,
   todoMongoRoutes,
+  postMongoRoutes,
 } = require("./routes");
 // sequelize.sync({ alter: true });
 
@@ -29,6 +30,9 @@ app.use("/post", postRoutes);
 app.use("/user", userRoutes);
 app.use("/usermongo", userMongoRoutes);
 app.use("/todo", todoMongoRoutes);
+app.use("/postimage", postMongoRoutes);
+
+app.use("/post_images", express.static(`${__dirname}/public/post_images`));
 
 app.get("/", (req, res) => {
   res.send("API is running");

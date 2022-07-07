@@ -139,6 +139,32 @@ const postController = {
       });
     }
   },
+  uploadPost: async (req, res) => {
+    try {
+      const { caption, location, user_id } = req.body;
+      const uploadFileDomain = process.env.UPLOAD_FILE_DOMAIN;
+      const filePath = "post_images";
+      const { filename } = req.file;
+      console.log("halo");
+
+      const newPost = await Post.create({
+        image_url: `${uploadFileDomain}/${filePath}/${filename}`,
+        caption,
+        location,
+        user_id,
+      });
+
+      return res.status(201).json({
+        message: "Post created",
+        result: newPost,
+      });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: "Server error",
+      });
+    }
+  },
 };
 
 module.exports = postController;

@@ -60,6 +60,12 @@ const userSchema = new mongoose.Schema(
         ref: "todos",
       },
     ],
+    posts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "posts",
+      },
+    ],
   },
   { timestamps: true }
 );
