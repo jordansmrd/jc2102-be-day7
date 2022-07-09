@@ -1,4 +1,7 @@
 const { Post, User } = require("../lib/sequelize");
+const sharp = require("sharp");
+
+const postMongo = require("../model_mongo/postModel");
 
 const postController = {
   getAllPost: async (req, res) => {
@@ -162,6 +165,54 @@ const postController = {
       console.log(err);
       return res.status(500).json({
         message: "Server error",
+      });
+    }
+  },
+  uploadwithMongo: async (req, res) => {
+    try {
+      const { caption, location, user_id } = req.body;
+
+      let pic = await sharp(req.file.buffer).png().toBuffer();
+
+      // let image_url = `${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH_POST}/${postSQL.id}`;
+
+      const lastPostId = await Post.findOne({
+        order: [["id", "DESC"]],
+      });
+
+      const postid = lastPostId.dataValues.id + 1;
+
+      const postSQL = await Post.create({
+        image_url: `${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH_POST}/${postid}`,
+        caption,
+        location,
+        user_id,
+      });
+
+      let post_mongo = new postMongo();
+      post_mongo.image = pic;
+      post_mongo.post_id = postid == postSQL.id ? postid : null;
+      post_mongo.owner = null;
+      await post_mongo.save();
+
+      // await Post.update(
+      //   {
+      //     image_url,
+      //   },
+      //   {
+      //     where: {
+      //       id: postSQL.id,
+      //     },
+      //   }
+      // );
+
+      return res.status(200).json({
+        message: "photo added",
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({
+        message: "Error",
       });
     }
   },
