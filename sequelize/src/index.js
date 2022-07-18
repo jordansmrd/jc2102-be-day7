@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const bodyParser = require("body-parser");
 
 dotenv.config();
 
@@ -12,6 +13,8 @@ const {
   userMongoRoutes,
   todoMongoRoutes,
   postMongoRoutes,
+  likeRoutes,
+  commentRoutes,
 } = require("./routes");
 // sequelize.sync({ alter: true });
 
@@ -22,15 +25,19 @@ mongoose
   .catch((err) => console.log("error"));
 
 const app = express();
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
 
 app.use(cors());
 app.use(express.json());
 
-app.use("/post", postRoutes);
-app.use("/user", userRoutes);
+app.use("/posts", postRoutes);
+app.use("/users", userRoutes);
 app.use("/usermongo", userMongoRoutes);
 app.use("/todo", todoMongoRoutes);
 app.use("/postimage", postMongoRoutes);
+app.use("/likes", likeRoutes);
+app.use("/comments", commentRoutes);
 
 app.use("/post_images", express.static(`${__dirname}/public/post_images`));
 

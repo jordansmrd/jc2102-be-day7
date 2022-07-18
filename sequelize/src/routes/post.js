@@ -39,6 +39,9 @@ router.delete("/:id", postController.deletePost);
 
 router.get("/paging", postController.getPostPaging);
 
-router.get("/:id", postController.getPostByUser);
+router.get("/:username", postController.getPostByUser);
+
+router.get("/", postController.getAllPost);
+router.get("/like/:id", postController.getPostByLiked);
 
 module.exports = router;

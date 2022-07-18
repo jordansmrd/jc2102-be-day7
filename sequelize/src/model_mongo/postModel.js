@@ -13,7 +13,6 @@ const postSchema = new mongoose.Schema(
       ref: "User",
     },
   },
-
   { timestamps: true }
 );
 

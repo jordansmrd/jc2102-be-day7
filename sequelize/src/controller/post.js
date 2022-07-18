@@ -1,4 +1,4 @@
-const { Post, User } = require("../lib/sequelize");
+const { Post, User, Like, Comment } = require("../lib/sequelize");
 const sharp = require("sharp");
 
 const postMongo = require("../model_mongo/postModel");
@@ -6,21 +6,14 @@ const postMongo = require("../model_mongo/postModel");
 const postController = {
   getAllPost: async (req, res) => {
     try {
-      const findPosts = await Post.findAll({
-        attributes: [
-          "image_url",
-          ["caption", "ini_caption_modified"],
-          "location",
-        ],
-
-        // where: {
-        //   user_id: 2,
-        // },
+      const findPost = await Post.findAll({
+        include: [User, Like, Comment],
+        limit: 10,
+        offset: 0,
       });
-
       return res.status(200).json({
         message: "fetched data post",
-        results: findPosts,
+        results: findPost,
       });
     } catch (err) {
       console.log(err);
@@ -52,22 +45,26 @@ const postController = {
   },
   getPostByUser: async (req, res) => {
     try {
-      const { id } = req.params;
-
+      const { username } = req.params;
+      // console.log("halo");
       const findPost = await Post.findAll({
         include: [
+          Like,
+          Comment,
           {
             model: User,
+            where: {
+              username,
+            },
           },
         ],
-        where: {
-          user_id: id,
-        },
       });
+
+      console.log(findPost);
 
       return res.status(200).json({
         message: "fetching data",
-        result: findPost,
+        results: findPost,
       });
     } catch (err) {
       console.log(err);
@@ -77,6 +74,35 @@ const postController = {
       });
     }
   },
+  getPostByLiked: async (req, res) => {
+    try {
+      const { id } = req.params;
+      const findPost = await Post.findAll({
+        include: [
+          User,
+          Comment,
+          {
+            model: Like,
+            where: {
+              UserId: id,
+            },
+          },
+        ],
+      });
+      console.log(findPost);
+      return res.status(200).json({
+        message: "fetching data",
+        results: findPost,
+      });
+    } catch (err) {
+      console.log(err);
+
+      res.status(400).json({
+        message: "error ",
+      });
+    }
+  },
+
   addPost: async (req, res) => {
     try {
       const { image_url, caption, location } = req.body;
@@ -120,6 +146,7 @@ const postController = {
   editPost: async (req, res) => {
     try {
       const { id } = req.params;
+      console.log(req.body);
 
       await Post.update(
         {
@@ -170,9 +197,10 @@ const postController = {
   },
   uploadwithMongo: async (req, res) => {
     try {
+      console.log("sadas");
       const { caption, location, user_id } = req.body;
 
-      let pic = await sharp(req.file.buffer).png().toBuffer();
+      let pic = await sharp(req.file.buffer).resize(365, 280).png().toBuffer();
 
       // let image_url = `${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH_POST}/${postSQL.id}`;
 
@@ -183,7 +211,7 @@ const postController = {
       const postid = lastPostId.dataValues.id + 1;
 
       const postSQL = await Post.create({
-        image_url: `${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH_POST}/${postid}`,
+        image_url: `http://${process.env.UPLOAD_FILE_DOMAIN}/${process.env.PATH_POST}/${postid}`,
         caption,
         location,
         user_id,

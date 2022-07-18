@@ -14,6 +14,9 @@ const User = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: false,
     },
+    avatar_url: {
+      type: DataTypes.STRING,
+    },
     email: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -21,6 +24,11 @@ const User = (sequelize) => {
         isEmail: true,
       },
     },
+    bio: {
+      type: DataTypes.STRING,
+      defaultValue: "",
+    },
+
     is_verified: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
