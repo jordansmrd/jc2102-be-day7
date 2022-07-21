@@ -256,8 +256,12 @@ const userController = {
         full_name,
         email,
       });
+
+
       // Verification email
       const verificationToken = nanoid(40);
+
+      console.log(nanoid(3))
 
       await VerificationToken.create({
         token: verificationToken,
@@ -295,7 +299,7 @@ const userController = {
   },
   loginV2: async (req, res) => {
     try {
-      const { email, password, username } = req.body;
+      const { email, password, username, ip_address, location } = req.body;
 
       const user = await User.findOne({
         where: {
@@ -314,11 +318,15 @@ const userController = {
       }
       const token = nanoid(64);
 
+
       // Create new session for logged in user
       await Session.create({
         user_id: user.id,
         is_valid: true,
         token: token,
+        location,
+        ip_address,
+        last_login: moment().utc(),
         valid_until: moment().add(1, "day")
       })
 
@@ -337,6 +345,73 @@ const userController = {
       console.log(err);
       res.status(400).json({
         message: err.toString(),
+      });
+    }
+  },
+  verifyUserV2: async (req,res) => {
+    try{
+      const { vertoken } = req.params
+
+      const ver = await VerificationToken.findOne({ 
+        where : {
+          token : vertoken,
+          is_valid : true,
+          valid_until : {
+            [Op.gt] : moment().utc(),
+          }
+        }
+      })
+
+      if(!ver) {
+        return res.status(400).json({
+          message: "token invalid",
+          success : false
+        })
+      }
+
+      await User.update({ is_verified: true}, {where: {
+        id: ver.user_id
+      }})
+
+
+      await VerificationToken.update({ is_valid: false} , { where: {
+        token : vertoken
+      }})
+
+      return res.status(200).json({
+        message: "User is Verified",
+        success:  true
+      })
+
+    }
+    catch(err) {
+      console.log(err);
+      res.status(400).json({
+        message: err.toString(),
+        success : false
+      })
+    }
+  },
+  keepLoginV2: async (req, res) => {
+    try {
+      const { token } = req;
+     
+      const findUser = token.User;
+
+      delete findUser.dataValues.password;
+
+      return res.status(200).json({
+        message: "Renewed user token",
+        result: {
+          user: findUser,
+          token: token.token,
+        },
+      });
+
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        message: "Server error",
       });
     }
   },

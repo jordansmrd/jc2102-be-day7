@@ -8,6 +8,15 @@ const Session = (sequelize) => {
         type: DataTypes.STRING,
         allowNull: false
       },
+      location: {
+        type: DataTypes.STRING,
+      },
+      ip_address: {
+        type: DataTypes.STRING,
+      },
+      last_login: {
+        type: DataTypes.DATE,
+      },
       valid_until: {
         type: DataTypes.DATE,
         allowNull: false

@@ -39,7 +39,19 @@ app.use("/postimage", postMongoRoutes);
 app.use("/likes", likeRoutes);
 app.use("/comments", commentRoutes);
 
+
+
 app.use("/post_images", express.static(`${__dirname}/public/post_images`));
+
+app.get("/test", (req, res, next) => {
+  // res.send("Response from  firstController");
+  next();
+}, 
+(req, res, next) => {
+  res.send("Response from  secondController");
+  next();
+}
+);
 
 app.get("/", (req, res) => {
   res.send("API is running");

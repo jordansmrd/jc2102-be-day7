@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { authorizedLoggedInUser } = require("../middlewares/authMiddleware");
+const { authorizedLoggedInUser , authorizedLoggedInUser2 } = require("../middlewares/authMiddleware");
 const multer = require("multer");
 
 const upload = multer({
@@ -35,6 +35,9 @@ router.patch("/verify/:vertoken", userController.verifyUser);
 
 router.post("/register/v2", userController.registerUserV2);
 router.post("/login/v2", userController.loginV2);
+router.patch("/verify/v2/:vertoken", userController.verifyUserV2);
+
+router.get("/refresh-token/v2",authorizedLoggedInUser2, userController.keepLoginV2);
 
 
 
