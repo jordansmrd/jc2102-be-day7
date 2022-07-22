@@ -16,7 +16,7 @@ const {
   likeRoutes,
   commentRoutes,
 } = require("./routes");
-// sequelize.sync({ alter: true });
+sequelize.sync({ alter: true });
 
 const mongoose = require("mongoose");
 mongoose
